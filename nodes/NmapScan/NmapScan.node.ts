@@ -38,16 +38,16 @@ export class NmapScan implements INodeType {
                 noDataExpression: true,
                 options: [
                     {
-                        name: 'Discovery network',
+                        name: 'Discovery Network',
                         value: 'discovery_network',
-                        description: 'Discovery network',
+                        description: 'Discovery network with fast ping (-sn)',
                         action: 'Discovery network',
                     },
                     {
-                        name: 'Port scan on a host',
+                        name: 'Ports Scan',
                         value: 'port_scan',
-                        description: 'Port scan on a host',
-                        action: 'Port scan on a host',
+                        description: 'Ports scan a host (-T4 -F)',
+                        action: 'Ports scan',
                     },
                 ],
                 default: 'discovery_network',
@@ -63,7 +63,7 @@ export class NmapScan implements INodeType {
                 },
                 required: true,
                 default: '192.168.0.0/24',
-                description: 'The LAN IP Range to target',
+                description: 'Define the LAN IP Range to target',
             },
             {
                 displayName: 'Target Host',
@@ -76,7 +76,7 @@ export class NmapScan implements INodeType {
                 },
                 required: true,
                 default: '192.168.0.1',
-                description: 'The Host or Url to target',
+                description: 'Define Host or URL to target',
             },
             {
                 displayName: 'Options',
