@@ -1,109 +1,122 @@
 import {
-    IDataObject, IExecuteFunctions, INodeExecutionData,
-    INodeType,
-    INodeTypeDescription, NodeConnectionType,
-    NodeOperationError,
+	IExecuteFunctions,
+	INodeExecutionData,
+	INodeType,
+	INodeTypeDescription,
+	NodeConnectionType,
+	NodeOperationError,
 } from 'n8n-workflow';
-import {ShellUtils} from "./utils/ShellUtils";
-import {NmapUtils} from "./utils/NmapUtils";
+import { ShellUtils } from './utils/ShellUtils';
+import { NmapUtils } from './utils/NmapUtils';
 
 export class NmapScan implements INodeType {
-    description: INodeTypeDescription = {
-        displayName: 'Nmap Scan',
-        name: 'nmapScan',
-        icon: 'file:NmapLogo.svg',
-        group: ['output'],
-        version: 1,
-        triggerPanel: false,
-        subtitle: '={{$parameter["operation"]}}',
-        description: 'Scan with nmap command',
-        defaults: {
-            name: 'Nmap Scan',
-        },
-        inputs: [NodeConnectionType.Main],
-        outputs: [NodeConnectionType.Main],
-        credentials: [
-            {
-                displayName: 'Local Sudo Password',
-                name: 'onlyPassword',
-                required: true,
-                //testedBy: 'localConnectionTest',
-            }
-        ],
-        properties: [
-            {
-                displayName: 'Operation',
-                name: 'operation',
-                type: 'options',
-                noDataExpression: true,
-                options: [
-                    {
-                        name: 'Discovery Network',
-                        value: 'discovery_network',
-                        description: 'Discovery network with fast ping (-sn)',
-                        action: 'Discovery network',
-                    },
-                    {
-                        name: 'Ports Scan',
-                        value: 'port_scan',
-                        description: 'Ports scan a host (-T4 -F)',
-                        action: 'Ports scan',
-                    },
-                ],
-                default: 'discovery_network',
-            },
-            {
-                displayName: 'Target Network Range',
-                name: 'network_range',
-                type: 'string',
-                displayOptions: {
-                    show: {
-                        operation: ['discovery_network', 'quick_scan'],
-                    },
-                },
-                required: true,
-                default: '192.168.0.0/24',
-                description: 'Define the LAN IP Range to target',
-            },
-            {
-                displayName: 'Target Host',
-                name: 'host',
-                type: 'string',
-                displayOptions: {
-                    show: {
-                        operation: ['port_scan'],
-                    },
-                },
-                required: true,
-                default: '192.168.0.1',
-                description: 'Define Host or URL to target',
-            },
-            {
-                displayName: 'Options',
-                name: 'port_scan_options',
-                type: 'collection',
-                placeholder: 'Add option',
-                displayOptions: {
-                    show: {
-                        operation: ['port_scan'],
-                    },
-                },
-                default: {},
-                options: [
-                    {
-                        displayName: 'Put Ports in Field',
-                        name: 'ports_values',
-                        type: 'string',
-                        default: 'ports',
-                        description: 'The name of the output field to put the data in',
-                    },
-                ],
-            },
-        ],
-    };
+	description: INodeTypeDescription = {
+		displayName: 'Nmap Scan',
+		name: 'nmapScan',
+		icon: 'file:NmapLogo.svg',
+		group: ['output'],
+		version: 1,
+		triggerPanel: false,
+		subtitle: '={{$parameter["operation"]}}',
+		description: 'Scan with nmap command',
+		defaults: {
+			name: 'Nmap Scan',
+		},
+		inputs: [NodeConnectionType.Main],
+		outputs: [NodeConnectionType.Main],
+		credentials: [
+			{
+				displayName: 'Local Sudo Password',
+				name: 'onlyPassword',
+				required: true,
+				//testedBy: 'localConnectionTest',
+			},
+		],
+		properties: [
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Quick Scan Network',
+						value: 'quick_scan_network',
+						description: 'Scan network with fast ping (-sn)',
+						action: 'Quick scan network',
+					},
+					{
+						name: 'Discovery Network',
+						value: 'discovery_network',
+						description: 'Discovery network with device and ports (-sS)',
+						action: 'Discovery network',
+					},
+					{
+						name: 'Ports Scan',
+						value: 'port_scan',
+						description: 'Ports scan a host (-F)',
+						action: 'Ports scan',
+					},
+				],
+				default: 'discovery_network',
+			},
+			{
+				displayName: 'Target Network Range / Host / IP',
+				name: 'network_range',
+				type: 'string',
+				required: true,
+				default: '192.168.0.0/24',
+				description: 'Define the target to scan',
+			},
+			{
+				displayName: 'Options',
+				name: 'options',
+				type: 'collection',
+				placeholder: 'Add option',
+				default: {},
+				options: [
+					{
+						displayName: 'Aggressive Mode',
+						name: 'aggressive_mode',
+						type: 'number',
+						default: 4,
+						description: 'For faster execution (-T4)',
+					},
+					{
+						displayName: 'Check All Ports',
+						name: 'all_ports',
+						type: 'boolean',
+						default: false,
+						description: "Check all ports, it's very slow ! (-p-)",
+					},
+					{
+						displayName: 'Check Top Ports',
+						name: 'top_ports',
+						type: 'number',
+						default: 1000,
+						description: 'Check usually top ports (--top-ports 1000)',
+					},
+					{
+						displayName: 'Host Discovery',
+						name: 'host_discovery',
+						type: 'boolean',
+						default: false,
+						description: 'Enable host discovery, faster without (-Pn)',
+					},
+					{
+						displayName: 'Put Ports in Field',
+						name: 'ports_field',
+						type: 'string',
+						default: 'ports',
+						description: 'The name of the output field to put the data in',
+					},
+				],
+			},
+		],
+	};
 
-    methods = {
-        /*
+	methods = {
+		/*
         credentialTest: {
             async localConnectionTest(
                 this: ICredentialTestFunctions,
@@ -133,68 +146,77 @@ export class NmapScan implements INodeType {
             },
         },
         */
-    };
+	};
 
-    async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+		const items = this.getInputData();
+		let item: INodeExecutionData;
+		const returnItems: INodeExecutionData[] = [];
 
-        const items = this.getInputData();
-        let item: INodeExecutionData;
-        const returnItems: INodeExecutionData[] = [];
+		for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+			item = { ...items[itemIndex] };
+			const newItem: INodeExecutionData = {
+				json: item.json,
+				pairedItem: {
+					item: itemIndex,
+				},
+			};
 
-        for (let itemIndex = 0; itemIndex < items.length; itemIndex++) {
+			// Parameters & Options
+			const operation = this.getNodeParameter('operation', itemIndex);
+			const network_range = this.getNodeParameter('network_range', itemIndex) as string;
 
-            item = {...items[itemIndex]};
-            const newItem: INodeExecutionData = {
-                json: item.json,
-                pairedItem: {
-                    item: itemIndex,
-                },
-            };
+			const options = this.getNodeParameter('options', itemIndex);
+			const host_discovery = options.host_discovery ? '' : '-Pn';
+			const aggressive_mode = options.aggressive_mode ? '-T4' : '';
+			const top_ports = options.top_ports ? '--top-ports ' + options.top_ports : '--top-ports 1000';
+			const all_ports = options.all_ports === true ? '-p-' : '';
+			const ports_field = (options.ports_field as string) || 'ports';
 
-            // Parameters & Options
-            const operation = this.getNodeParameter('operation', itemIndex) as string;
+			// Credentials
+			const credentials = await this.getCredentials('onlyPassword');
 
-            // Credentials
-            const credentials = await this.getCredentials('onlyPassword');
+			let command: string = `nmap -help`;
 
-            let command: string = `nmap -help`;
+			if (operation === 'quick_scan_network') {
+				command = `nmap -sn ${aggressive_mode} ${network_range}`;
+			} else if (operation === 'discovery_network') {
+				command = `nmap -sS ${host_discovery} ${aggressive_mode} ${top_ports} ${all_ports} ${network_range}`;
+			} else if (operation === 'port_scan') {
+				command = `nmap -F ${host_discovery} ${aggressive_mode} ${top_ports} ${all_ports} ${network_range}`;
+			}
 
-            if (operation === 'discovery_network') {
-                const network_range = this.getNodeParameter('network_range', itemIndex) as string;
-                command = `nmap -sn ${network_range}`;
-            } else if (operation === 'port_scan') {
-                const host = this.getNodeParameter('host', itemIndex) as string;
-                command = `nmap -T4 -F ${host}`;
-            }
+			console.log(`Nmap Scan starting ${command}`);
 
-            console.log(`Nmap Scan starting ${command}`);
+			const nmapUtils = new NmapUtils();
+			const shellUtils = new ShellUtils();
+			await shellUtils
+				.sudoCommand(command, credentials.password)
+				.then((output) => {
+					console.log(`Nmap Scan done ${command}`);
 
-            const nmapUtils = new NmapUtils();
-            const shellUtils = new ShellUtils();
-            await shellUtils.sudoCommand(command, credentials.password).then(output => {
-                console.log(`Nmap Scan done ${command}`);
+					if (operation === 'quick_scan_network') {
+						nmapUtils.parseNmapQuickScan(output).forEach((value) => {
+							returnItems.push({
+								json: value,
+							});
+						});
+					} else if (operation === 'discovery_network') {
+						nmapUtils.parseNmapDiscovery(output, ports_field).forEach((value) => {
+							returnItems.push({
+								json: value,
+							});
+						});
+					} else if (operation === 'port_scan') {
+						newItem.json[ports_field] = nmapUtils.parseNmapPorts(output);
+						returnItems.push(newItem);
+					}
+				})
+				.catch((e) => {
+					throw new NodeOperationError(this.getNode(), e);
+				});
+		}
 
-                if (operation === 'discovery_network') {
-
-                    nmapUtils.parseNmapDiscovery(output).forEach(value => {
-                        returnItems.push({
-                            json: value
-                        });
-                    });
-
-
-                } else if (operation === 'port_scan') {
-                    const options = this.getNodeParameter('port_scan_options', itemIndex) as IDataObject;
-
-                    newItem.json![options.ports_values as string || 'ports'] = nmapUtils.parseNmapPorts(output);
-                    returnItems.push(newItem);
-                }
-
-            }).catch(e => {
-                throw new NodeOperationError(this.getNode(), e);
-            });
-        }
-
-        return [returnItems];
-    }
+		return [returnItems];
+	}
 }

@@ -38,7 +38,7 @@ module.exports = {
 				'n8n-nodes-base/cred-class-field-documentation-url-miscased': 'off',
 				'n8n-nodes-base/cred-class-name-unsuffixed': 'off',
 				'n8n-nodes-base/cred-class-field-name-unsuffixed': 'off',
-				'n8n-nodes-base/cred-class-field-display-name-missing-api': 'off'
+				'n8n-nodes-base/cred-class-field-display-name-missing-api': 'off',
 			},
 		},
 		{
@@ -52,6 +52,7 @@ module.exports = {
 				'n8n-nodes-base/node-class-description-inputs-wrong-regular-node': 'off',
 				'n8n-nodes-base/node-class-description-outputs-wrong': 'off',
 				'n8n-nodes-base/node-class-description-credentials-name-unsuffixed': 'off',
+				'n8n-nodes-base/node-param-description-boolean-without-whether': 'off',
 			},
 		},
 	],
