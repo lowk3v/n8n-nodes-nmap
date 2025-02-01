@@ -80,7 +80,7 @@ export class NmapScan implements INodeType {
             },
             {
                 displayName: 'Options',
-                name: 'options',
+                name: 'port_scan_options',
                 type: 'collection',
                 placeholder: 'Add option',
                 displayOptions: {
@@ -154,11 +154,8 @@ export class NmapScan implements INodeType {
             // Parameters & Options
             const operation = this.getNodeParameter('operation', itemIndex) as string;
 
-            const options = this.getNodeParameter('options', itemIndex) as IDataObject;
-
             // Credentials
             const credentials = await this.getCredentials('onlyPassword');
-
 
             let command: string = `nmap -help`;
 
@@ -187,12 +184,11 @@ export class NmapScan implements INodeType {
 
 
                 } else if (operation === 'port_scan') {
+                    const options = this.getNodeParameter('port_scan_options', itemIndex) as IDataObject;
 
                     newItem.json![options.ports_values as string || 'ports'] = nmapUtils.parseNmapPorts(output);
                     returnItems.push(newItem);
-
                 }
-
 
             }).catch(e => {
                 throw new NodeOperationError(this.getNode(), e);
