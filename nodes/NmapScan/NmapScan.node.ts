@@ -52,10 +52,16 @@ export class NmapScan implements INodeType {
 						action: 'Discovery network',
 					},
 					{
-						name: 'Ports Scan',
-						value: 'port_scan',
-						description: 'Ports scan a host (-F)',
-						action: 'Ports scan',
+						name: 'Ports Fast Scan',
+						value: 'ports_fast_scan',
+						description: 'Ports fast scan a host (-F)',
+						action: 'Ports fast scan',
+					},
+					{
+						name: 'All Ports Scan',
+						value: 'all_ports_scan',
+						description: 'All Ports scan a host (-p-)',
+						action: 'All ports scan',
 					},
 				],
 				default: 'discovery_network',
@@ -79,15 +85,8 @@ export class NmapScan implements INodeType {
 						displayName: 'Aggressive Mode',
 						name: 'aggressive_mode',
 						type: 'number',
-						default: 4,
-						description: 'For faster execution (-T4)',
-					},
-					{
-						displayName: 'Check All Ports',
-						name: 'all_ports',
-						type: 'boolean',
-						default: false,
-						description: "Check all ports, it's very slow ! (-p-)",
+						default: 5,
+						description: 'For faster execution (-T5)',
 					},
 					{
 						displayName: 'Check Top Ports',
@@ -101,10 +100,10 @@ export class NmapScan implements INodeType {
 						name: 'host_discovery',
 						type: 'boolean',
 						default: false,
-						description: 'Enable host discovery, faster without (-Pn)',
+						description: 'Enable host discovery, faster if disable (-Pn)',
 					},
 					{
-						displayName: 'Put Ports in Field',
+						displayName: 'Put Result in Field',
 						name: 'ports_field',
 						type: 'string',
 						default: 'ports',
@@ -168,9 +167,8 @@ export class NmapScan implements INodeType {
 
 			const options = this.getNodeParameter('options', itemIndex);
 			const host_discovery = options.host_discovery ? '' : '-Pn';
-			const aggressive_mode = options.aggressive_mode ? '-T4' : '';
+			const aggressive_mode = options.aggressive_mode ? '-T5' : '';
 			const top_ports = options.top_ports ? '--top-ports ' + options.top_ports : '--top-ports 1000';
-			const all_ports = options.all_ports === true ? '-p-' : '';
 			const ports_field = (options.ports_field as string) || 'ports';
 
 			// Credentials
@@ -181,9 +179,11 @@ export class NmapScan implements INodeType {
 			if (operation === 'quick_scan_network') {
 				command = `nmap -sn ${aggressive_mode} ${network_range}`;
 			} else if (operation === 'discovery_network') {
-				command = `nmap -sS ${host_discovery} ${aggressive_mode} ${top_ports} ${all_ports} ${network_range}`;
-			} else if (operation === 'port_scan') {
-				command = `nmap -F ${host_discovery} ${aggressive_mode} ${top_ports} ${all_ports} ${network_range}`;
+				command = `nmap -sS ${host_discovery} ${aggressive_mode} ${top_ports} ${network_range}`;
+			} else if (operation === 'ports_fast_scan') {
+				command = `nmap -F ${host_discovery} ${aggressive_mode} ${top_ports} ${network_range}`;
+			} else if (operation === 'all_ports_scan') {
+				command = `nmap -p- ${host_discovery} ${aggressive_mode} ${top_ports} ${network_range}`;
 			}
 
 			console.log(`Nmap Scan starting ${command}`);
@@ -207,7 +207,7 @@ export class NmapScan implements INodeType {
 								json: value,
 							});
 						});
-					} else if (operation === 'port_scan') {
+					} else if (operation === 'ports_fast_scan' || operation === 'all_ports_scan') {
 						newItem.json[ports_field] = nmapUtils.parseNmapPorts(output);
 						returnItems.push(newItem);
 					}
