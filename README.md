@@ -16,12 +16,11 @@ NmapNode is a custom n8n node designed to automate network discovery and port sc
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-Or manual install with `npm i n8n-nodes-nmap`
-https://www.npmjs.com/package/n8n-nodes-nmap
+Install with `npm i n8n-nodes-nmap`
 
-Install Nmap on n8n instance with  `apt-get install nmap`
+Need Nmap installed on n8n instance eg. `apt-get install nmap`
 
-## Usage
+## Disclaimer
 The NmapNode for n8n is intended for authorized security assessments and internal network audits only. Unauthorized scanning of networks, systems, or devices without explicit permission may violate laws and regulations.
 
 By using this node, you acknowledge that:
