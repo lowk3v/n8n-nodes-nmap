@@ -1,23 +1,35 @@
-# n8n-nodes-tail
+# NmapNode – Custom n8n Node for Network Scanning
 
 This is a n8n community node.
 
-TailTrigger allows real-time monitoring of a local file to start the workflow whenever a line is added.
+NmapNode is a custom n8n node designed to automate network discovery and port scanning using Nmap. It allows users to scan their local network, identify active devices, and detect open ports with customizable scan options.
 
 [n8n](https://n8n.io/) is a [fair-code licensed](https://docs.n8n.io/reference/license/) workflow automation platform.
+
+## Key Features
+* Nmap Quick Scan Network (-sn)
+* Nmap Discovery Network (-sS)
+* Nmap Ports Fast Scan (-F)
+* Nmap All Ports Scan (-p-)
 
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
 
-Or manual install with `npm i n8n-nodes-tail`
+Or manual install with `npm i n8n-nodes-nmap`
+https://www.npmjs.com/package/n8n-nodes-nmap
 
-https://www.npmjs.com/package/n8n-nodes-tail
+Install Nmap on n8n instance with  `apt-get install nmap`
 
 ## Usage
-Disclaimer: It is not recommended to use this on large log files (such as nginx logs), as it may trigger an excessive number of workflows.
+The NmapNode for n8n is intended for authorized security assessments and internal network audits only. Unauthorized scanning of networks, systems, or devices without explicit permission may violate laws and regulations.
 
-Tip: Use a command like ` | grep ` beforehand to filter the logs and create a smaller file for monitoring.
+By using this node, you acknowledge that:
+*	You have explicit authorization to scan the target network.
+*	You assume full responsibility for any consequences arising from its use.
+*	The developers and contributors of this node are not liable for any misuse or damages caused.
+
+⚠ Always obtain proper authorization before conducting any network scan. ⚠
 
 ## Compatibility
 

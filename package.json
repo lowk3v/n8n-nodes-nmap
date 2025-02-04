@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-nmap",
-  "version": "1.0.dev",
+  "version": "1.0.0",
   "description": "Nmap Scan",
   "keywords": [
     "Nmap", "Scan", "n8n-community-node-package"
@@ -28,7 +28,7 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "prepublish": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
-    "package": "pnpm prepublish && npm pack --pack-destination ./package/"
+    "package": "rimraf ./package/** && pnpm prepublish && npm pack --pack-destination ./package/"
   },
   "files": [
     "dist"

@@ -168,7 +168,7 @@ export class NmapScan implements INodeType {
 			const options = this.getNodeParameter('options', itemIndex);
 			const host_discovery = options.host_discovery ? '' : '-Pn';
 			const aggressive_mode = options.aggressive_mode ? '-T5' : '';
-			const top_ports = options.top_ports ? '--top-ports ' + options.top_ports : '--top-ports 1000';
+			const top_ports = options.top_ports ? '--top-ports ' + options.top_ports : '';
 			const ports_field = (options.ports_field as string) || 'ports';
 
 			// Credentials
@@ -190,8 +190,12 @@ export class NmapScan implements INodeType {
 
 			const nmapUtils = new NmapUtils();
 			const shellUtils = new ShellUtils();
+
+			const workingDirectory = await shellUtils.resolveHomeFolder('~/');
+			console.log(workingDirectory);
+
 			await shellUtils
-				.sudoCommand(command, credentials.password)
+				.sudoCommand(command, workingDirectory, credentials.password)
 				.then((output) => {
 					console.log(`Nmap Scan done ${command}`);
 

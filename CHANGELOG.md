@@ -2,5 +2,7 @@
 
 ### Features
 
-* Nmap Local Discovery Network
-* Nmap Local Ports scan
+* Nmap Quick Scan Network (-sn)
+* Nmap Discovery Network (-sS)
+* Nmap Ports Fast Scan (-F)
+* Nmap All Ports Scan (-p-)
