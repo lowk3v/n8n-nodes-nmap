@@ -39,7 +39,7 @@
       "dist/nodes/NmapScan/NmapScan.node.js"
     ],
     "credentials": [
-      "dist/credentials/LocalPassword.credentials.js"
+      "dist/credentials/OnlyPassword.credentials.js"
     ]
   },
   "devDependencies": {
