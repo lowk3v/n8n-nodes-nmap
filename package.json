@@ -1,16 +1,18 @@
 {
   "name": "n8n-nodes-nmap",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Nmap Scan",
   "keywords": [
-    "Nmap", "Scan", "SecOps", "Zubial", "n8n-community-node-package"
+    "Nmap",
+    "Scan",
+    "SecOps",
+    "Zubial",
+    "n8n-community-node-package",
+    "LowK"
   ],
   "license": "MIT",
-  "homepage": "www.zubial.net",
-  "author": {
-    "name": "Zubial.net",
-    "email": "support@zubial.net"
-  },
+  "homepage": "http://www.zubial.net",
+  "author": "Zubial.net <support@zubial.net>",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zubial/n8n-nodes-nmap.git"
@@ -28,7 +30,7 @@
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
     "prepublish": "pnpm build && pnpm lint -c .eslintrc.prepublish.js nodes credentials package.json",
-    "package": "rimraf ./package/** && pnpm prepublish && npm pack --pack-destination ./package/"
+    "package": "mkdir -p ./package && rimraf ./package/** && pnpm prepublish && npm pack --pack-destination ./package/"
   },
   "files": [
     "dist"

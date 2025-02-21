@@ -28,7 +28,7 @@ export class NmapScan implements INodeType {
 			{
 				displayName: 'Local Sudo Password',
 				name: 'onlyPassword',
-				required: true,
+				required: false,
 				//testedBy: 'localConnectionTest',
 			},
 		],
@@ -194,33 +194,63 @@ export class NmapScan implements INodeType {
 			const workingDirectory = await shellUtils.resolveHomeFolder('~/');
 			console.log(workingDirectory);
 
-			await shellUtils
-				.sudoCommand(command, workingDirectory, credentials.password)
-				.then((output) => {
-					console.log(`Nmap Scan done ${command}`);
+			if (credentials.password === undefined || credentials.password === '') {
+				// 	execute without
+				await shellUtils
+					.command(command, workingDirectory)
+					.then((output) => {
+						console.log(`Nmap Scan done ${command}`);
 
-					if (operation === 'quick_scan_network') {
-						nmapUtils.parseNmapQuickScan(output).forEach((value) => {
-							returnItems.push({
-								json: value,
+						if (operation === 'quick_scan_network') {
+							nmapUtils.parseNmapQuickScan(output).forEach((value) => {
+								returnItems.push({
+									json: value,
+								});
 							});
-						});
-					} else if (operation === 'discovery_network') {
-						nmapUtils.parseNmapDiscovery(output, ports_field).forEach((value) => {
-							returnItems.push({
-								json: value,
+						} else if (operation === 'discovery_network') {
+							nmapUtils.parseNmapDiscovery(output, ports_field).forEach((value) => {
+								returnItems.push({
+									json: value,
+								});
 							});
-						});
-					} else if (operation === 'ports_fast_scan' || operation === 'all_ports_scan') {
-						newItem.json[ports_field] = nmapUtils.parseNmapPorts(output);
-						returnItems.push(newItem);
-					}
-				})
+						} else if (operation === 'ports_fast_scan' || operation === 'all_ports_scan') {
+							newItem.json[ports_field] = nmapUtils.parseNmapPorts(output);
+							returnItems.push(newItem);
+						}
+					})
 				.catch((e) => {
 					throw new NodeOperationError(this.getNode(), e);
 				});
-		}
 
+			} else {
+				// execute with sudo command
+				await shellUtils
+					.sudoCommand(command, workingDirectory, credentials.password)
+					.then((output) => {
+						console.log(`Nmap Scan done ${command}`);
+
+						if (operation === 'quick_scan_network') {
+							nmapUtils.parseNmapQuickScan(output).forEach((value) => {
+								returnItems.push({
+									json: value,
+								});
+							});
+						} else if (operation === 'discovery_network') {
+							nmapUtils.parseNmapDiscovery(output, ports_field).forEach((value) => {
+								returnItems.push({
+									json: value,
+								});
+							});
+						} else if (operation === 'ports_fast_scan' || operation === 'all_ports_scan') {
+							newItem.json[ports_field] = nmapUtils.parseNmapPorts(output);
+							returnItems.push(newItem);
+						}
+					})
+				.catch((e) => {
+					throw new NodeOperationError(this.getNode(), e);
+				});
+			}
+		}
 		return [returnItems];
 	}
 }

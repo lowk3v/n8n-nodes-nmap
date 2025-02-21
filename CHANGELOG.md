@@ -1,3 +1,9 @@
+## 1.0.2
+
+### Features
+
+* Option choose sudo for nmap command
+
 ## 1.0.0
 
 ### Features

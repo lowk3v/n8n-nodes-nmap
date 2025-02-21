@@ -12,6 +12,9 @@ NmapNode is a custom n8n node designed to automate network discovery and port sc
 * Nmap Ports Fast Scan (-F)
 * Nmap All Ports Scan (-p-)
 
+## Additional Features by @LowK
+* Option choose sudo for nmap command
+
 ## Installation
 
 Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the n8n community nodes documentation.
